@@ -15,13 +15,41 @@ if [[ -z "$FULL_FILE_PATH" ]]; then
     exit 1
 fi
 
-# Small delay to help ensure the file is fully written before processing
-# QuickTime usually closes files promptly after recording.
-sleep 5
+# Robust file stability check: Wait until file size stops changing
+echo "[QUICKSHIFT_CONVERT] Checking file stability for: $FULL_FILE_PATH"
 
-if [ ! -f "$FULL_FILE_PATH" ]; then
-    echo "[QUICKSHIFT_CONVERT] File not found (or is not a regular file) after sleep: $FULL_FILE_PATH"
-    exit 0
+prev_size=-1
+stability_counter=0
+# Max wait: ~60s
+max_checks=30
+
+for ((i=0; i<max_checks; i++)); do
+    if [ ! -f "$FULL_FILE_PATH" ]; then
+         echo "[QUICKSHIFT_CONVERT] File vanished during check: $FULL_FILE_PATH"
+         exit 0
+    fi
+
+    # portable way to get size
+    curr_size=$(wc -c < "$FULL_FILE_PATH")
+    
+    if [ "$prev_size" -eq "$curr_size" ] && [ "$curr_size" -gt 0 ]; then
+        ((stability_counter++))
+    else
+        stability_counter=0
+    fi
+
+    # If size has been stable for 3 consecutive checks (approx 6 seconds)
+    if [ "$stability_counter" -ge 3 ]; then
+        echo "[QUICKSHIFT_CONVERT] File size stable ($curr_size bytes). Proceeding."
+        break
+    fi
+
+    prev_size=$curr_size
+    sleep 2
+done
+
+if [ "$stability_counter" -lt 3 ]; then
+    echo "[QUICKSHIFT_CONVERT] Warning: Timeout waiting for file stability or file is empty. Proceeding..."
 fi
 
 # Determine ffmpeg path
