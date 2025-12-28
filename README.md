@@ -19,6 +19,12 @@ Make sure, these are installed:
 brew install ffmpeg fswatch
 ```
 
+> **Tip:** You can change where macOS saves screen recordings by running:
+> ```shell
+> defaults write com.apple.screencapture location ~/Pictures/screencaptures
+> killall SystemUIServer
+> ```
+
 ## Installation
 
 - Clone this repository or download it
@@ -26,6 +32,24 @@ brew install ffmpeg fswatch
 - Make sure the file are executable: `chmod +x quickshift-*.sh`
 - Launch it with `./quickshift-watcher.sh`
 
+## Configuration
+
+You can configure the scripts by creating a `~/.quickshiftrc` file in your home directory.
+
+**Example `~/.quickshiftrc`:**
+```bash
+# [MANDATORY] Path to watch for new screen recordings
+WATCH_FOLDER="${HOME}/Pictures/screencaptures"
+
+# [OPTIONAL] Set to "true" to delete the original .mov file after conversion (Default: false)
+# DELETE_ORIGINAL_MOV=true
+
+# [OPTIONAL] Video Quality Settings (CRF: Lower is better quality, 18-28 is sane range) (Default: 23)
+# CRF_VALUE=23
+
+# [OPTIONAL] Encoding Preset (ultrafast, medium, veryslow) (Default: medium)
+# PRESET="medium"
+```
 ## TODO
 
 - [ ] Automatically launch the watcher using a `~/Library/LaunchAgents/*.plist` file.

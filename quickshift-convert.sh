@@ -1,8 +1,17 @@
 #!/bin/bash
 
 # --- Configuration ---
-# Set to "true" to delete .mov after successful conversion.
+# Defaults
 DELETE_ORIGINAL_MOV=false
+PRESET="medium"
+CRF_VALUE=23
+
+# Load User Configuration
+CONFIG_FILE="${HOME}/.quickshiftrc"
+if [ -f "$CONFIG_FILE" ]; then
+    # shellcheck source=/dev/null
+    source "$CONFIG_FILE"
+fi
 # --- End Configuration ---
 
 FULL_FILE_PATH="$1"
@@ -91,7 +100,7 @@ if [ "$extension_lower" == "mov" ]; then
     trap 'rm -rf "$LOCK_FILE"' EXIT
 
     # Run conversion with ffmpeg
-    "$FFMPEG_PATH" -hide_banner -loglevel error -i "$FULL_FILE_PATH" -c:v libx264 -crf 23 -preset medium -c:a aac -b:a 128k -pix_fmt yuv420p -movflags +faststart -y "$output_file"
+    "$FFMPEG_PATH" -hide_banner -loglevel error -i "$FULL_FILE_PATH" -c:v libx264 -crf "$CRF_VALUE" -preset "$PRESET" -c:a aac -b:a 128k -pix_fmt yuv420p -movflags +faststart -y "$output_file"
 
     if [ $? -eq 0 ]; then
         if [ "$DELETE_ORIGINAL_MOV" = true ]; then
