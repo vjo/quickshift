@@ -6,7 +6,6 @@ CONVERSION_SCRIPT_PATH="./quickshift-convert.sh"
 # Load User Configuration
 CONFIG_FILE="${HOME}/.quickshiftrc"
 if [ -f "$CONFIG_FILE" ]; then
-    # shellcheck source=/dev/null
     source "$CONFIG_FILE"
 fi
 
