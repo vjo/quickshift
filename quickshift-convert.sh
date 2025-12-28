@@ -62,10 +62,11 @@ fi
 
 filename_with_ext=$(basename "$FULL_FILE_PATH")
 extension="${filename_with_ext##*.}"
+extension_lower=$(echo "$extension" | tr '[:upper:]' '[:lower:]')
 filename_no_ext="${filename_with_ext%.*}"
 dir_path=$(dirname "$FULL_FILE_PATH")
 
-if [ "$extension" == "mov" ]; then
+if [ "$extension_lower" == "mov" ]; then
     output_file="${dir_path}/${filename_no_ext}.mp4"
 
     # Check if output file already exists and is newer; if so, skip
