@@ -76,6 +76,19 @@ if [ "$extension" == "mov" ]; then
 
     echo "[QUICKSHIFT_CONVERT] Attempting to convert '$FULL_FILE_PATH' to '$output_file'"
 
+    # Create a lock file to prevent simultaneous processing of the same file
+    LOCK_DIR="/tmp/quickshift_locks"
+    mkdir -p "$LOCK_DIR"
+    LOCK_FILE="${LOCK_DIR}/${filename_no_ext}.lock"
+
+    if ! mkdir "$LOCK_FILE" 2>/dev/null; then
+        echo "[QUICKSHIFT_CONVERT] Lock file exists for '$filename_no_ext'. Conversion in progress or stale lock: skipping."
+        exit 0
+    fi
+
+    # Remove lock file on exit
+    trap 'rm -rf "$LOCK_FILE"' EXIT
+
     # Run conversion with ffmpeg
     "$FFMPEG_PATH" -hide_banner -loglevel error -i "$FULL_FILE_PATH" -c:v libx264 -crf 23 -preset medium -c:a aac -b:a 128k -pix_fmt yuv420p -movflags +faststart -y "$output_file"
 
