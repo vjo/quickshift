@@ -2,13 +2,23 @@
 
 # --- Configuration ---
 CONVERSION_SCRIPT_PATH="./quickshift-convert.sh"
-# Assuming we have define the default destination for screen catpures:
-# e.g. `defaults write com.apple.screencapture location ~/Pictures/screencaptures`
-WATCH_FOLDER="${HOME}/Pictures/screencaptures"
+
+# Load User Configuration
+CONFIG_FILE="${HOME}/.quickshiftrc"
+if [ -f "$CONFIG_FILE" ]; then
+    source "$CONFIG_FILE"
+fi
+
+if [ -z "$WATCH_FOLDER" ]; then
+    echo "[QUICKSHIFT_WATCHER] Error: WATCH_FOLDER is not set."
+    echo "Please create ~/.quickshiftrc and set WATCH_FOLDER=\"/path/to/watch\""
+    exit 1
+fi
 # --- End Configuration ---
 
 echo "===================================="
 echo "[QUICKSHIFT_WATCHER] Starting at $(date)"
+echo "[QUICKSHIFT_WATCHER] Watching folder: $WATCH_FOLDER"
 
 # Determine `fswatch` path
 if command -v fswatch >/dev/null 2>&1; then
