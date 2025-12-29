@@ -27,10 +27,31 @@ brew install ffmpeg fswatch
 
 ## Installation
 
-- Clone this repository or download it
-- Edit the configuration at the top of both script files
-- Make sure the file are executable: `chmod +x quickshift-*.sh`
-- Launch it with `./quickshift-watcher.sh`
+1.  Clone this repository or download it.
+2.  Run the installer:
+    ```shell
+    ./install.sh
+    ```
+    This script will:
+    *   Check/Install dependencies (`ffmpeg`, `fswatch`).
+    *   Help you configure the watch folder.
+    *   Set up auto-start on login (optional).
+
+## Uninstallation
+
+To remove Quickshift and stop the background watcher:
+
+```shell
+# 1. Unload and remove the auto-start agent
+launchctl bootout "gui/$(id -u)" ~/Library/LaunchAgents/com.USER.quickshift.plist
+rm ~/Library/LaunchAgents/com.USER.quickshift.plist
+
+# 2. Remove configuration (Optional)
+rm ~/.quickshiftrc
+
+# 3. Delete the repository
+rm -rf /path/to/quickshift
+```
 
 ## Configuration
 
@@ -50,6 +71,3 @@ WATCH_FOLDER="${HOME}/Pictures/screencaptures"
 # [OPTIONAL] Encoding Preset (ultrafast, medium, veryslow) (Default: medium)
 # PRESET="medium"
 ```
-## TODO
-
-- [ ] Automatically launch the watcher using a `~/Library/LaunchAgents/*.plist` file.
